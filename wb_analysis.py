@@ -81,16 +81,33 @@ def get_2025_values(df):
     return df[df["year"] == 2025][["country_name"] + ECONOMIC_INDICATORS].reset_index(drop=True)
 
 
-def predict_2030_values(df_2025,slopes_df):
-    """ 
-    Returns a new data frame with predicted data for ECONOMIC_INDICATORS for the years 2025 to 2030
-    - saves dataframe with predictions to a .csv file for future reference
-    @input_parameters  - clean_df and slopes_with_gdp_df
+def predict_2030_values_linear_regression(clean_df):
     """
-    my_df = df_2025.copy()
-    my_df[ECONOMIC_INDICATORS] = my_df[ECONOMIC_INDICATORS] + (5 * slopes_df[ECONOMIC_INDICATORS])
-    my_df.to_csv(ROOT_FOLDER + r"\world_bank_2030_prediction.csv", index=False)
-    return my_df
+    Predicts 2030 indicator values using linear regression for each country and indicator
+    @input_parameters:
+    - clean_df : cleaned dataframe with years and indicators
+    @returned_variables:
+    - DataFrame with predicted 2030 values for each country
+    """
+    predictions = []    
+    for country, group in clean_df.groupby("country_name"):
+        row = {"country_name": country}
+        x = group["year"].values
+
+        for indicator in ECONOMIC_INDICATORS:
+            y = group[indicator].values
+            if len(x) > 1:
+                slope, intercept = np.polyfit(x, y, 1)
+                y_pred = slope * 2030 + intercept
+                row[indicator] = y_pred
+            else:
+                row[indicator] = np.nan 
+        
+        predictions.append(row)
+
+    predicted_df = pd.DataFrame(predictions)
+    predicted_df.to_csv(ROOT_FOLDER + r"\world_bank_2030_prediction.csv", index=False)
+    return predicted_df
 
 
 def get_slope_with_gdp_growth(df, indicators, time_col, group_col):
@@ -336,6 +353,7 @@ def plot_global_indicator_trendline(actual_df, predicted_df):
     plt.xlabel("Year")
     plt.ylabel("Indicator Value")
     plt.legend(title="Indicator", bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.xlim(2010, 2030) #keeps x range between 2010 and 2030
     plt.tight_layout()    
     plt.savefig(ROOT_FOLDER + r"\indicator_trends_across_years.png")
     # ensuring that years remainwhole numbers
@@ -393,7 +411,7 @@ def main():
     clean_2025_df = get_2025_values(clean_df).copy()
 
     # predicting values of indicators upto 2030 and normalizing resulting values by column
-    predicted_2030_df = predict_2030_values(clean_2025_df,slopes_with_gdp_df)
+    predicted_2030_df = predict_2030_values_linear_regression(clean_df)
     normalized_2030_df = normalize_data(predicted_2030_df)
 
     # applying weights, scoring and ranking
