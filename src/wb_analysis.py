@@ -6,19 +6,24 @@ import seaborn as sns
 import os
 
 
-#### CONSTANTS ####
-ROOT_FOLDER = r'C:\Users\User\OneDrive\Desktop\anacondaProjects\world_bank_growth_potential_index'
-ROOT_FILE = os.path.join(ROOT_FOLDER, 'world_bank_data_2025.csv')
+#### FILE HANDLING ####
+ROOT_FOLDER = r'C:\Users\User\OneDrive\Desktop\anacondaProjects\world_bank_growth_potential_index'  # change to the path of your project directory
+ROOT_FILE = os.path.join(ROOT_FOLDER, 'data','world_bank_data_2025.csv')
 
-CSV_FOLDER = os.path.join(ROOT_FOLDER, 'csv_output_reference_files')
+OUTPUT_FOLDER = os.path.join(ROOT_FOLDER,'output')
+os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+
+CSV_FOLDER = os.path.join(OUTPUT_FOLDER, 'csv_files')
 os.makedirs(CSV_FOLDER, exist_ok=True)
 
-PLOT_FOLDER = os.path.join(ROOT_FOLDER, 'plots')
+PLOT_FOLDER = os.path.join(OUTPUT_FOLDER, 'plots')
 os.makedirs(PLOT_FOLDER, exist_ok=True)
 
-SUMMARY_FOLDER = os.path.join(ROOT_FOLDER, 'summary_statistics')
+SUMMARY_FOLDER = os.path.join(OUTPUT_FOLDER, 'summary_statistics')
 os.makedirs(SUMMARY_FOLDER, exist_ok=True)
 
+
+#### CONSTANTS ####
 WEIGHTS = {
     "GDP Growth (% Annual)": 0.15, 
     "GDP per Capita (Current USD)": 0.25, # lower weight because it is in USD and hence not relative
@@ -251,7 +256,7 @@ def get_normalized_scores(df):
     else:
         res_df['normalized_score'] = (numerator / denominator) * 100
     # Save to CSV (with both raw and normalized scores)
-    res_df.to_csv(os.path.join(ROOT_FOLDER, 'growth_potential_index.csv'), index=True)    
+    res_df.to_csv(os.path.join(CSV_FOLDER, 'growth_potential_index.csv'), index=True)    
     return res_df
 
 
