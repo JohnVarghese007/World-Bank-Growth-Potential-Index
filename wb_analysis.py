@@ -3,11 +3,22 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy import stats
 import seaborn as sns
+import os
 
 
 #### CONSTANTS ####
-ROOT_FILE = r"world_bank_growth_potential_index\world_bank_data_2025.csv"
-ROOT_FOLDER = r"world_bank_growth_potential_index"
+ROOT_FOLDER = r'C:\Users\User\OneDrive\Desktop\anacondaProjects\world_bank_growth_potential_index'
+ROOT_FILE = os.path.join(ROOT_FOLDER, 'world_bank_data_2025.csv')
+
+CSV_FOLDER = os.path.join(ROOT_FOLDER, 'csv_output_reference_files')
+os.makedirs(CSV_FOLDER, exist_ok=True)
+
+PLOT_FOLDER = os.path.join(ROOT_FOLDER, 'plots')
+os.makedirs(PLOT_FOLDER, exist_ok=True)
+
+SUMMARY_FOLDER = os.path.join(ROOT_FOLDER, 'summary_statistics')
+os.makedirs(SUMMARY_FOLDER, exist_ok=True)
+
 WEIGHTS = {
     "GDP Growth (% Annual)": 0.15, 
     "GDP per Capita (Current USD)": 0.25, # lower weight because it is in USD and hence not relative
@@ -69,7 +80,7 @@ def clean_data(original_df):
     original_df = original_df.groupby("country_name", group_keys=False).apply(fill_na_with_median).reset_index(drop=True)  # replacing null values with median by country    
     clean_df = original_df[original_df.isna().sum(axis = 1) <= 0]   # removing any leftover rows with null values
 
-    clean_df.to_csv(ROOT_FOLDER + r"\world_bank_cleaned.csv", index=False) 
+    clean_df.to_csv(os.path.join(CSV_FOLDER,'world_bank_cleaned.csv'), index=False) 
     return clean_df
 
 
@@ -106,7 +117,7 @@ def predict_2030_values_linear_regression(clean_df):
         predictions.append(row)
 
     predicted_df = pd.DataFrame(predictions)
-    predicted_df.to_csv(ROOT_FOLDER + r"\world_bank_2030_prediction.csv", index=False)
+    predicted_df.to_csv(os.path.join(CSV_FOLDER ,'world_bank_2030_prediction.csv'), index=False)
     return predicted_df
 
 
@@ -131,7 +142,7 @@ def get_slope_with_gdp_growth(df, indicators, time_col, group_col):
             country_slopes[indicator] = slope
         slopes.append(country_slopes)    
     slopes_df = pd.DataFrame(slopes)
-    slopes_df.to_csv(ROOT_FOLDER + r"\world_bank_slopes.csv", index=False)
+    slopes_df.to_csv(os.path.join(CSV_FOLDER, 'world_bank_slopes.csv'), index=False)
     return slopes_df
 
 
@@ -186,7 +197,7 @@ def normalize_data(df):
             normalized_df[col] = numerator/denominator
     #removing outliers 
     normalized_df[ECONOMIC_INDICATORS] = normalized_df[ECONOMIC_INDICATORS].clip(0.015,0.985)
-    normalized_df.to_csv(ROOT_FOLDER + r"\world_bank_normalized.csv", index=False)
+    normalized_df.to_csv(os.path.join(CSV_FOLDER, 'world_bank_normalized.csv'), index=False)
     return normalized_df
 
 
@@ -240,7 +251,7 @@ def get_normalized_scores(df):
     else:
         res_df['normalized_score'] = (numerator / denominator) * 100
     # Save to CSV (with both raw and normalized scores)
-    res_df.to_csv(ROOT_FOLDER + r"\growth_potential_index.csv", index=True)    
+    res_df.to_csv(os.path.join(ROOT_FOLDER, 'growth_potential_index.csv'), index=True)    
     return res_df
 
 
@@ -276,7 +287,7 @@ def plot_combined_indicator_cor_heatmap(combined_weighted_df,ECONOMIC_INDICATORS
     sns.heatmap(combined_weighted_df[ECONOMIC_INDICATORS].corr(), annot=True, cmap='coolwarm')
     plt.title('Correlation Between Economic Indicators (Based on predicted values)')
     plt.tight_layout()
-    plt.savefig(ROOT_FOLDER + r"\indicator_combined_correlation_heatmap.png")
+    plt.savefig(os.path.join(PLOT_FOLDER, 'indicator_combined_correlation_heatmap.png'))
     plt.show()
 
 
@@ -289,7 +300,7 @@ def plot_bar_chart(ranked_df, size):
     plt.xticks(rotation=45, ha='right')
     plt.title(f'Top {size} Countries by Growth Potential Index')
     plt.tight_layout()
-    plt.savefig(ROOT_FOLDER + r"\top_{}_countries_bar_chart.png".format(size))
+    plt.savefig(os.path.join(PLOT_FOLDER, 'top_{}_countries_bar_chart.png'.format(size)))
     plt.show()
 
 
@@ -314,7 +325,7 @@ def plot_box_chart(df,title,file_name):
         ax.set_ylabel('')
     
     plt.tight_layout(rect=[0, 0, 1, 0.97]) 
-    plt.savefig(ROOT_FOLDER + "/" + file_name, facecolor="#F5F5F5")
+    plt.savefig(os.path.join(PLOT_FOLDER, file_name), facecolor="#F5F5F5")
     plt.close()
 
 
@@ -355,7 +366,7 @@ def plot_global_indicator_trendline(actual_df, predicted_df):
     plt.legend(title="Indicator", bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.xlim(2010, 2030) #keeps x range between 2010 and 2030
     plt.tight_layout()    
-    plt.savefig(ROOT_FOLDER + r"\indicator_trends_across_years.png")
+    plt.savefig(os.path.join(PLOT_FOLDER, 'indicator_trends_across_years.png'))
     # ensuring that years remainwhole numbers
     plt.show()
 
@@ -393,7 +404,7 @@ def save_summary_statistics(df, filename):
     - filename
     """
     summary = df[ECONOMIC_INDICATORS].describe().T
-    summary.to_csv(ROOT_FOLDER + filename, index=True)
+    summary.to_csv(os.path.join(SUMMARY_FOLDER, filename), index=True)
     
 
 def main():
@@ -423,7 +434,7 @@ def main():
     plot_data_wrapper(clean_df,clean_2025_df, predicted_2030_df, weighted_df, slopes_with_gdp_df, normalized_ranked_df)
 
     # saving summary statsitcs in a csv file
-    save_summary_statistics(predicted_2030_df,r'\summary_stats.csv')
+    save_summary_statistics(predicted_2030_df,'summary_stats.csv')
 
 
 if __name__ == "__main__":
