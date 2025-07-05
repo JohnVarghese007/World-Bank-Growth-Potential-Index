@@ -391,8 +391,8 @@ def plot_data_wrapper(clean_df,clean_2025_df,predicted_2030_df,weighted_df,slope
     # top 10 countries by GPI score chart
     plot_bar_chart(normalized_ranked_df,10)       
     # BOX PLOTS TO SHOW DISTRIBUTION OF clean_df and weighted_df ECONOMIC_INDICATORS
-    plot_box_chart(clean_2025_df,title = 'RAW DISTRIBUTIONS OF ALL INDICATORS [2025]',file_name='boxplot_raw_indicators_stacked.png')
-    plot_box_chart(weighted_df,title = 'PROJECTED WEIGHTED DISTRIBUTIONS OF ALL INDICATORS [2030]',file_name='boxplot_weighted_indicators_stacked.png')
+    plot_box_chart(clean_2025_df,title = 'RAW DISTRIBUTIONS OF ALL INDICATORS [2010 - 2025]',file_name='boxplot_raw_indicators_stacked.png')
+    plot_box_chart(predicted_2030_df,title = 'PROJECTED DISTRIBUTIONS OF ALL INDICATORS [2030]',file_name='boxplot_weighted_indicators_stacked.png')
     # global indicator trendline
     plot_global_indicator_trendline_wrapper(clean_df,slopes_with_gdp_df)
 
