@@ -40,11 +40,11 @@ This project is an attempt at real-world data analysis and visualization, built 
 
 ###  Top 10 Countries by Growth Potential Score
 
-![Top 10 Countries](./plots/top_10_countries_bar_chart.png)
+![Top 10 Countries](.output/plots/top_10_countries_bar_chart.png)
 
 ###  Global Economic Trends (2010 - 2030)
 
-![Global Economic Trends (2010 - 2030)](./plots/indicator_trends_across_years.png)
+![Global Economic Trends (2010 - 2030)](.output/plots/indicator_trends_across_years.png)
 
 ---
 
