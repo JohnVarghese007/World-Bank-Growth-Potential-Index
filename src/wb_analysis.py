@@ -7,7 +7,7 @@ import os
 
 
 #### FILE HANDLING ####
-ROOT_FOLDER = r'C:\Users\User\OneDrive\Desktop\anacondaProjects\world_bank_growth_potential_index'  # change to the path of your project directory
+ROOT_FOLDER = r'C:\Users\User\Desktop\anacondaProjects\world_bank_growth_potential_index'  # change to the path of your project directory
 ROOT_FILE = os.path.join(ROOT_FOLDER, 'data','world_bank_data_2025.csv')
 
 OUTPUT_FOLDER = os.path.join(ROOT_FOLDER,'output')
